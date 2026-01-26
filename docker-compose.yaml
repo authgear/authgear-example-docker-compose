@@ -44,7 +44,7 @@ services:
     - "3100:3100"
 
   authgear:
-    image: quay.io/theauthgear/authgear-server:2025-11-26.0
+    image: quay.io/theauthgear/authgear-server:2026-01-08.0
     volumes:
     - ./var:/app
     env_file:
@@ -55,7 +55,7 @@ services:
     - "3002:3002"
 
   authgear-images:
-    image: quay.io/theauthgear/authgear-server:2025-11-26.0
+    image: quay.io/theauthgear/authgear-server:2026-01-08.0
     volumes:
     - ./var:/app
     env_file:
@@ -64,7 +64,7 @@ services:
     - "3004:3004"
 
   authgear-portal:
-    image: quay.io/theauthgear/authgear-portal:2025-11-26.0
+    image: quay.io/theauthgear/authgear-portal:2026-01-08.0
     volumes:
     - ./var:/app
     env_file:
