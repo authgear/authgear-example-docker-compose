@@ -10,6 +10,12 @@ SEARCH_DATABASE_SCHEMA=public
 REDIS_URL=redis://redis:6379/0
 ANALYTIC_REDIS_URL=redis://redis:6379/1
 
+# Enable the portal Audit Log, Search and Analytics features.
+# Without these, the portal hides the corresponding menu items.
+AUDIT_LOG_ENABLED=true
+SEARCH_ENABLED=true
+ANALYTIC_ENABLED=true
+
 CONFIG_SOURCE_TYPE=database
 CUSTOM_RESOURCE_DIRECTORY=/app
 APP_CUSTOM_RESOURCE_DIRECTORY=/app
