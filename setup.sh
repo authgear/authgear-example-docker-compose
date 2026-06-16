@@ -4,6 +4,12 @@ set -e
 ADMIN_EMAIL="${ADMIN_EMAIL:-user@example.com}"
 ADMIN_PASSWORD="${ADMIN_PASSWORD:-secretpassword}"
 
+mkdir -p accounts
+if [ -n "$(ls -A accounts)" ]; then
+  echo "Error: accounts/ is not empty. Remove it first: rm -rf accounts"
+  exit 1
+fi
+
 echo "==> Generating project config..."
 docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear authgear init --interactive=false \
   --purpose=portal \
