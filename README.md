@@ -5,15 +5,6 @@ This setup is NOT intended for production use.
 
 ## First time setup
 
-### Step 0: Edit your /etc/hosts on your host machine
-
-Add the following to `/etc/hosts`
-
-```
-127.0.0.1 accounts.localhost
-127.0.0.1 portal.localhost
-```
-
 ### Step 1: Start the dependent services
 
 ```sh
@@ -60,8 +51,8 @@ docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear auth
   --purpose=portal \
   --for-helm-chart=true \
   --app-id="accounts" \
-  --public-origin="http://accounts.localhost:3100" \
-  --portal-origin="http://portal.localhost:8010" \
+  --public-origin="http://localhost:3100" \
+  --portal-origin="http://localhost:8010" \
   --portal-client-id=portal \
   --phone-otp-mode=sms \
   --disable-email-verification=true \
@@ -73,7 +64,7 @@ docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear auth
 
 ```sh
 docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear-portal authgear-portal internal configsource create /work
-docker compose run --rm authgear-portal authgear-portal internal domain create-default --default-domain-suffix ".localhost"
+docker compose run --rm authgear-portal authgear-portal internal domain create-default --default-domain-suffix "localhost"
 ```
 
 ### Step 7: Create your account in project "accounts"
@@ -86,7 +77,7 @@ docker compose run --rm authgear-portal authgear-portal internal domain create-d
 docker compose exec authgear authgear internal admin-api invoke \
   --app-id accounts \
   --endpoint "http://127.0.0.1:3002" \
-  --host "accounts.localhost:3100" \
+  --host "localhost:3100" \
   --query '
     mutation createUser($email: String!, $password: String!) {
       createUser(input: {
@@ -145,7 +136,7 @@ docker compose run --rm authgear-portal authgear-portal internal collaborator ad
 
 ### Step 10: Visit the portal
 
-Visit `http://portal.localhost:8010` and sign in with your account created in a previous step.
+Visit `http://localhost:8010` and sign in with your account created in a previous step.
 
 ## Non-first time setup
 
