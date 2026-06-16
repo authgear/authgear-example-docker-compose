@@ -25,7 +25,7 @@ echo "==> Creating admin user ($ADMIN_EMAIL)..."
 OUTPUT=$(docker compose run --rm authgear authgear internal admin-api invoke \
   --app-id accounts \
   --endpoint "http://authgear:3002" \
-  --host "localhost:3100" \
+  --host "accounts.localhost:3100" \
   --query '
     mutation createUser($email: String!, $password: String!) {
       createUser(input: {
