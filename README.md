@@ -5,22 +5,11 @@ This setup is NOT intended for production use.
 
 ## First time setup
 
-### Step 1: Start the dependent services
+### Step 1: Start MinIO and create object store buckets
 
 ```sh
-docker compose up -d postgres redis minio
+docker compose up -d minio
 ```
-
-### Step 2: Run database migrations
-
-```sh
-docker compose run --rm -it authgear authgear database migrate up
-docker compose run --rm -it authgear authgear audit database migrate up
-docker compose run --rm -it authgear authgear images database migrate up
-docker compose run --rm -it authgear-portal authgear-portal database migrate up
-```
-
-### Step 3: Create object store buckets
 
 Run this command to enter the container.
 
@@ -38,13 +27,15 @@ mc mb local/userexport
 
 Press CTRL-D to exit the container
 
-### Step 4: Start Authgear
+### Step 2: Start Authgear
+
+Migrations run automatically on startup.
 
 ```sh
 docker compose up
 ```
 
-### Step 5: Create the project configuration for "accounts"
+### Step 3: Create the project configuration for "accounts"
 
 ```sh
 docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear authgear init --interactive=false \
@@ -60,14 +51,14 @@ docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear auth
   -o /work
 ```
 
-### Step 6: Create the project "accounts"
+### Step 4: Create the project "accounts"
 
 ```sh
 docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear-portal authgear-portal internal configsource create /work
 docker compose run --rm authgear-portal authgear-portal internal domain create-default --default-domain-suffix "localhost"
 ```
 
-### Step 7: Create your account in project "accounts"
+### Step 5: Create your account in project "accounts"
 
 > [!IMPORTANT]
 > The email used in this step is `user@example.com` while the password is `secretpassword`.
@@ -106,7 +97,7 @@ It should output something like
 
 Take note of the user node ID.
 
-### Step 8: Decode the user node ID
+### Step 6: Decode the user node ID
 
 > [!IMPORTANT]
 > The literal user node ID used here is NOT intended for copy-and-paste directly.
@@ -124,7 +115,7 @@ User:208daadc-0fc8-45cc-8405-582355fa24ee
 
 Take note of the user raw ID.
 
-### Step 9: Grant yourself access to the project "accounts"
+### Step 7: Grant yourself access to the project "accounts"
 
 > [!IMPORTANT]
 > The literal user raw ID used here is NOT intended for copy-and-paste directly.
@@ -134,7 +125,7 @@ Take note of the user raw ID.
 docker compose run --rm authgear-portal authgear-portal internal collaborator add --app-id accounts --user-id 208daadc-0fc8-45cc-8405-582355fa24ee --role owner
 ```
 
-### Step 10: Visit the portal
+### Step 8: Visit the portal
 
 Visit `http://localhost:8010` and sign in with your account created in a previous step.
 
