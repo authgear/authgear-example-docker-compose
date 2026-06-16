@@ -22,9 +22,9 @@ docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear-port
 docker compose run --rm authgear-portal authgear-portal internal domain create-default --default-domain-suffix ".localhost"
 
 echo "==> Creating admin user ($ADMIN_EMAIL)..."
-OUTPUT=$(docker compose run --rm authgear authgear internal admin-api invoke \
+OUTPUT=$(docker compose exec -T authgear authgear internal admin-api invoke \
   --app-id accounts \
-  --endpoint "http://authgear:3002" \
+  --endpoint "http://127.0.0.1:3002" \
   --host "accounts.localhost:3100" \
   --query '
     mutation createUser($email: String!, $password: String!) {
