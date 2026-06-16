@@ -69,7 +69,7 @@ services:
       MC_HOST_local: "http://minio:secretpassword@minio:9000"
 
   init-migrate:
-    image: quay.io/theauthgear/authgear-server:2026-01-08.0
+    image: quay.io/theauthgear/authgear-server:2026-06-11.0
     env_file:
     - ./env
     depends_on:
@@ -83,7 +83,7 @@ services:
       authgear images database migrate up
 
   init-migrate-portal:
-    image: quay.io/theauthgear/authgear-portal:2026-01-08.0
+    image: quay.io/theauthgear/authgear-portal:2026-06-11.0
     env_file:
     - ./env
     depends_on:
@@ -96,7 +96,7 @@ services:
 
   # Application
   authgear:
-    image: quay.io/theauthgear/authgear-server:2026-01-08.0
+    image: quay.io/theauthgear/authgear-server:2026-06-11.0
     volumes:
     - ./var:/app
     env_file:
@@ -112,7 +112,7 @@ services:
     - "3002:3002"
 
   authgear-images:
-    image: quay.io/theauthgear/authgear-server:2026-01-08.0
+    image: quay.io/theauthgear/authgear-server:2026-06-11.0
     volumes:
     - ./var:/app
     env_file:
@@ -126,7 +126,7 @@ services:
     - "3004:3004"
 
   authgear-portal:
-    image: quay.io/theauthgear/authgear-portal:2026-01-08.0
+    image: quay.io/theauthgear/authgear-portal:2026-06-11.0
     volumes:
     - ./var:/app
     env_file:
