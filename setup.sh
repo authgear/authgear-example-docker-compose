@@ -9,7 +9,7 @@ docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear auth
   --purpose=portal \
   --for-helm-chart=true \
   --app-id="accounts" \
-  --public-origin="http://localhost:3100" \
+  --public-origin="http://accounts.localhost:3100" \
   --portal-origin="http://localhost:8010" \
   --portal-client-id=portal \
   --phone-otp-mode=sms \
@@ -19,7 +19,7 @@ docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear auth
 
 echo "==> Uploading project config..."
 docker compose run --rm --workdir "/work" -v "$PWD/accounts:/work" authgear-portal authgear-portal internal configsource create /work
-docker compose run --rm authgear-portal authgear-portal internal domain create-default --default-domain-suffix "localhost"
+docker compose run --rm authgear-portal authgear-portal internal domain create-default --default-domain-suffix ".localhost"
 
 echo "==> Creating admin user ($ADMIN_EMAIL)..."
 OUTPUT=$(docker compose run --rm authgear authgear internal admin-api invoke \
