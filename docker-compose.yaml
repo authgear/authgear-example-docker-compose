@@ -1,4 +1,5 @@
 services:
+  # Infrastructure
   postgres:
     image: postgres-pg-partman:latest
     build:
@@ -45,7 +46,16 @@ services:
       timeout: 5s
       retries: 10
 
-  minio-init:
+  nginx:
+    image: nginx:stable
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+    - "8010:8010"
+    - "3100:3100"
+
+  # Init
+  init-minio:
     image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
     depends_on:
       minio:
@@ -60,7 +70,7 @@ services:
       MINIO_ROOT_USER: "minio"
       MINIO_ROOT_PASSWORD: "secretpassword"
 
-  migrate:
+  init-migrate:
     image: quay.io/theauthgear/authgear-server:2026-01-08.0
     env_file:
     - ./env
@@ -74,7 +84,7 @@ services:
       authgear audit database migrate up &&
       authgear images database migrate up
 
-  migrate-portal:
+  init-migrate-portal:
     image: quay.io/theauthgear/authgear-portal:2026-01-08.0
     env_file:
     - ./env
@@ -86,14 +96,7 @@ services:
     - |
       authgear-portal database migrate up
 
-  nginx:
-    image: nginx:stable
-    volumes:
-    - ./nginx.conf:/etc/nginx/nginx.conf
-    ports:
-    - "8010:8010"
-    - "3100:3100"
-
+  # Application
   authgear:
     image: quay.io/theauthgear/authgear-server:2026-01-08.0
     volumes:
@@ -101,9 +104,9 @@ services:
     env_file:
     - ./env
     depends_on:
-      migrate:
+      init-migrate:
         condition: service_completed_successfully
-      minio-init:
+      init-minio:
         condition: service_completed_successfully
     ports:
     - "3000:3000"
@@ -117,9 +120,9 @@ services:
     env_file:
     - ./env
     depends_on:
-      migrate:
+      init-migrate:
         condition: service_completed_successfully
-      minio-init:
+      init-minio:
         condition: service_completed_successfully
     ports:
     - "3004:3004"
@@ -131,7 +134,7 @@ services:
     env_file:
     - ./env
     depends_on:
-      migrate-portal:
+      init-migrate-portal:
         condition: service_completed_successfully
     ports:
     - "3003:3003"
