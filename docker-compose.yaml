@@ -39,6 +39,26 @@ services:
     environment:
       MINIO_ROOT_USER: "minio"
       MINIO_ROOT_PASSWORD: "secretpassword"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio-init:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+    - |
+      mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" &&
+      mc mb --ignore-existing local/images &&
+      mc mb --ignore-existing local/userexport
+    environment:
+      MINIO_ROOT_USER: "minio"
+      MINIO_ROOT_PASSWORD: "secretpassword"
 
   migrate:
     image: quay.io/theauthgear/authgear-server:2026-01-08.0
@@ -83,6 +103,8 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
+      minio-init:
+        condition: service_completed_successfully
     ports:
     - "3000:3000"
     - "3001:3001"
@@ -96,6 +118,8 @@ services:
     - ./env
     depends_on:
       migrate:
+        condition: service_completed_successfully
+      minio-init:
         condition: service_completed_successfully
     ports:
     - "3004:3004"
