@@ -10,6 +10,7 @@ This is a demo of how you can run Authgear with Docker Compose locally.
 > - Review and replace all environment variables and secrets in the `env` file
 >   (e.g. database passwords, secret keys, JWT secrets)
 > - Update all origins (e.g. allowed origins, redirect URIs, CORS settings) to match your actual domain
+> - Disable `DEV_MODE` (set to `true` in `env` by default)
 
 ## First time setup
 
