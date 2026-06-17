@@ -30,8 +30,6 @@ ADMIN_EMAIL=you@example.com ADMIN_PASSWORD=yourpassword ./setup.sh
 
 Visit `http://localhost:8010` and sign in with your admin account.
 
-The auth server is at `http://accounts.localhost:3100`. Modern browsers resolve
-`*.localhost` to 127.0.0.1 automatically (RFC 6761) — no `/etc/hosts` edits needed.
 
 ## Non-first time setup
 
