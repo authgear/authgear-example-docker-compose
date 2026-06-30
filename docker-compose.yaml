@@ -80,7 +80,8 @@ services:
     - |
       authgear database migrate up &&
       authgear audit database migrate up &&
-      authgear images database migrate up
+      authgear images database migrate up &&
+      authgear search database migrate up
 
   init-migrate-portal:
     image: quay.io/theauthgear/authgear-portal:2026-06-11.0
