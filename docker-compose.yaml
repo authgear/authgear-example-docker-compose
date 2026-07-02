@@ -1,4 +1,5 @@
 services:
+  # Infrastructure
   postgres:
     image: postgres-pg-partman:latest
     build:
@@ -10,6 +11,11 @@ services:
       POSTGRES_PASSWORD: "postgres"
     ports:
     - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   redis:
     image: redis:6.2.21
@@ -34,6 +40,11 @@ services:
     environment:
       MINIO_ROOT_USER: "minio"
       MINIO_ROOT_PASSWORD: "secretpassword"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   nginx:
     image: nginx:stable
@@ -43,32 +54,87 @@ services:
     - "8010:8010"
     - "3100:3100"
 
+  # Init
+  init-minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+    - |
+      mc mb --ignore-existing local/images &&
+      mc mb --ignore-existing local/userexport
+    environment:
+      MC_HOST_local: "http://minio:secretpassword@minio:9000"
+
+  init-migrate:
+    image: quay.io/theauthgear/authgear-server:2026-06-11.0
+    env_file:
+    - ./env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+    - |
+      authgear database migrate up &&
+      authgear audit database migrate up &&
+      authgear images database migrate up &&
+      authgear search database migrate up
+
+  init-migrate-portal:
+    image: quay.io/theauthgear/authgear-portal:2026-06-11.0
+    env_file:
+    - ./env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+    - |
+      authgear-portal database migrate up
+
+  # Application
   authgear:
-    image: quay.io/theauthgear/authgear-server:2026-01-08.0
+    image: quay.io/theauthgear/authgear-server:2026-06-11.0
     volumes:
     - ./var:/app
     env_file:
     - ./env
+    depends_on:
+      init-migrate:
+        condition: service_completed_successfully
+      init-minio:
+        condition: service_completed_successfully
     ports:
     - "3000:3000"
     - "3001:3001"
     - "3002:3002"
 
   authgear-images:
-    image: quay.io/theauthgear/authgear-server:2026-01-08.0
+    image: quay.io/theauthgear/authgear-server:2026-06-11.0
     volumes:
     - ./var:/app
     env_file:
     - ./env
+    depends_on:
+      init-migrate:
+        condition: service_completed_successfully
+      init-minio:
+        condition: service_completed_successfully
     ports:
     - "3004:3004"
 
   authgear-portal:
-    image: quay.io/theauthgear/authgear-portal:2026-01-08.0
+    image: quay.io/theauthgear/authgear-portal:2026-06-11.0
     volumes:
     - ./var:/app
     env_file:
     - ./env
+    depends_on:
+      init-migrate-portal:
+        condition: service_completed_successfully
     ports:
     - "3003:3003"
 
